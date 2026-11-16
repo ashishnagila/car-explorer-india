@@ -1,0 +1,375 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Explorer India</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background: #f2f5fa;
+  color: #18243a;
+}
+.container {
+  max-width: 950px;
+  margin: auto;
+}
+header {
+  background: linear-gradient(120deg,#173b72,#5279c7);
+  color: white;
+  padding: 28px;
+  border-radius: 14px;
+}
+header h1 { margin-top: 0; }
+.search {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+input, select {
+  padding: 13px;
+  border: 1px solid #ccd4e1;
+  border-radius: 8px;
+  font-size: 16px;
+}
+input { flex: 1; min-width: 0; }
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 18px;
+  background: #285ca8;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+button:hover { opacity: .85; }
+.filters {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0;
+}
+.filters select { flex: 1; min-width: 0; }
+#status { margin: 15px 0; color: #64748b; }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 15px;
+}
+.card, .details {
+  background: white;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 2px 8px #0000000b;
+}
+.card h2 { margin-bottom: 8px; }
+.price {
+  font-size: 23px;
+  font-weight: bold;
+  color: #1d5ba9;
+  margin: 12px 0;
+}
+.details { margin-top: 20px; }
+.specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
+  gap: 10px;
+  margin: 15px 0;
+}
+.spec {
+  background: #f0f4fa;
+  padding: 13px;
+  border-radius: 8px;
+}
+.spec strong { display: block; margin-top: 7px; }
+.features li { margin: 10px 0; }
+@media(max-width:550px) {
+  body { padding: 12px; }
+  .search { flex-direction: column; }
+  .filters { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>🚘 Car Explorer India</h1>
+  <p>Find car prices, specifications and features.</p>
+  <div class="search">
+    <input id="search" placeholder="Enter car name e.g. Creta, Nexon">
+    <button onclick="searchCars()">Search</button>
+  </div>
+</header>
+
+<div class="filters">
+  <select id="brand" onchange="searchCars()">
+    <option value="">All Brands</option>
+    <option>Mahindra</option>
+    <option>Tata</option>
+    <option>Hyundai</option>
+    <option>Maruti Suzuki</option>
+    <option>Kia</option>
+    <option>Toyota</option>
+  </select>
+  <select id="category" onchange="searchCars()">
+    <option value="">All Categories</option>
+    <option>SUV</option>
+    <option>Hatchback</option>
+    <option>Sedan</option>
+    <option>MPV</option>
+  </select>
+</div>
+
+<p id="status">Popular cars</p>
+<div id="results" class="cards"></div>
+<div id="details"></div>
+
+</div>
+
+<script>
+const cars = [
+{
+ brand:"Tata", name:"Nexon", category:"SUV",
+ price:"₹7.40–14.52 lakh",
+ fuel:"Petrol, Diesel, CNG",
+ engine:"1199–1497 cc",
+ transmission:"Manual, AMT, DCT",
+ seats:"5",
+ mileage:"Variant dependent",
+ features:["Touchscreen infotainment","Six airbags",
+ "Sunroof on selected variants","ABS with EBD",
+ "Wireless connectivity","Drive modes"]
+},
+{
+ brand:"Hyundai", name:"Creta", category:"SUV",
+ price:"₹10.91–20.46 lakh",
+ fuel:"Petrol, Diesel",
+ engine:"Variant dependent",
+ transmission:"Manual, Automatic, DCT",
+ seats:"5",
+ mileage:"Variant dependent",
+ features:["Panoramic sunroof on selected variants",
+ "Touchscreen","Ventilated seats on selected variants",
+ "Six airbags","ADAS on selected variants"]
+},
+{
+ brand:"Mahindra", name:"XUV 7XO", category:"SUV",
+ price:"₹13.99–25.94 lakh",
+ fuel:"Petrol, Diesel",
+ engine:"Variant dependent",
+ transmission:"Manual, Automatic",
+ seats:"6 / 7",
+ mileage:"Variant dependent",
+ features:["Large infotainment display",
+ "Panoramic sunroof on selected variants",
+ "Premium audio system","Advanced safety features"]
+},
+{
+ brand:"Maruti Suzuki", name:"Brezza", category:"SUV",
+ price:"₹7.50–13.71 lakh",
+ fuel:"Petrol, CNG",
+ engine:"Variant dependent",
+ transmission:"Manual, Automatic",
+ seats:"5",
+ mileage:"Variant dependent",
+ features:["SmartPlay infotainment","Six airbags",
+ "Cruise control on selected variants",
+ "Rear camera","Sunroof on selected variants"]
+},
+{
+ brand:"Mahindra", name:"Scorpio-N", category:"SUV",
+ price:"₹13.69–25.49 lakh",
+ fuel:"Petrol, Diesel",
+ engine:"Variant dependent",
+ transmission:"Manual, Automatic",
+ seats:"6 / 7",
+ mileage:"Variant dependent",
+ features:["4X4 on selected variants",
+ "Touchscreen","Six airbags",
+ "Terrain management on selected variants"]
+},
+{
+ brand:"Tata", name:"Punch", category:"SUV",
+ price:"₹5.75–10.77 lakh",
+ fuel:"Petrol, CNG",
+ engine:"Variant dependent",
+ transmission:"Manual, AMT",
+ seats:"5",
+ mileage:"Variant dependent",
+ features:["Touchscreen","Six airbags on selected variants",
+ "Electronic stability control",
+ "Parking camera on selected variants"]
+},
+{
+ brand:"Kia", name:"Seltos", category:"SUV",
+ price:"₹11.25–22.02 lakh",
+ fuel:"Petrol, Diesel",
+ engine:"Variant dependent",
+ transmission:"Manual, Automatic, DCT",
+ seats:"5",
+ mileage:"Variant dependent",
+ features:["Large touchscreen",
+ "ADAS on selected variants",
+ "Ventilated seats on selected variants",
+ "Panoramic sunroof on selected variants"]
+},
+{
+ brand:"Maruti Suzuki", name:"Swift", category:"Hatchback",
+ price:"₹5.84–8.89 lakh",
+ fuel:"Petrol",
+ engine:"Variant dependent",
+ transmission:"Manual, AMT",
+ seats:"5",
+ mileage:"Variant dependent",
+ features:["SmartPlay infotainment","Six airbags",
+ "Electronic stability program","Parking sensors"]
+},
+{
+ brand:"Toyota", name:"Urban Cruiser Hyryder", category:"SUV",
+ price:"₹11.31–20.19 lakh",
+ fuel:"Petrol, CNG, Hybrid",
+ engine:"Variant dependent",
+ transmission:"Manual, Automatic, e-CVT",
+ seats:"5",
+ mileage:"Variant dependent",
+ features:["Strong hybrid option",
+ "360-degree camera on selected variants",
+ "Connected technology","All-wheel drive on selected variants"]
+},
+{
+ brand:"Mahindra", name:"XUV 3XO", category:"SUV",
+ price:"₹7.79–15.04 lakh",
+ fuel:"Petrol, Diesel",
+ engine:"Variant dependent",
+ transmission:"Manual, Automatic",
+ seats:"5",
+ mileage:"Variant dependent",
+ features:["Panoramic sunroof on selected variants",
+ "ADAS on selected variants","Six airbags",
+ "Dual-zone climate control on selected variants"]
+}
+];
+
+function searchCars() {
+ const q = document.getElementById("search").value
+   .trim().toLowerCase();
+ const brand = document.getElementById("brand").value;
+ const category = document.getElementById("category").value;
+
+ const filtered = cars.filter(c =>
+   (!brand || c.brand === brand) &&
+   (!category || c.category === category) &&
+   (!q || (c.name+" "+c.brand).toLowerCase().includes(q))
+ );
+
+ const results = document.getElementById("results");
+ document.getElementById("details").innerHTML = "";
+ results.innerHTML = "";
+
+ document.getElementById("status").textContent =
+   filtered.length + " car(s) found";
+
+ filtered.forEach((car) => {
+   const card = document.createElement("div");
+   card.className = "card";
+
+   const title = document.createElement("h2");
+   title.textContent = car.name;
+   card.appendChild(title);
+
+   const brandText = document.createElement("p");
+   brandText.textContent = car.brand + " | " + car.category;
+   card.appendChild(brandText);
+
+   const price = document.createElement("div");
+   price.className = "price";
+   price.textContent = car.price;
+   card.appendChild(price);
+
+   const button = document.createElement("button");
+   button.textContent = "View Details";
+   button.onclick = () => showDetails(car);
+   card.appendChild(button);
+
+   results.appendChild(card);
+ });
+}
+
+function showDetails(car) {
+ const box = document.getElementById("details");
+ box.innerHTML = "";
+
+ const title = document.createElement("h2");
+ title.textContent = car.brand + " " + car.name;
+ box.appendChild(title);
+
+ const panel = document.createElement("div");
+ panel.className = "details";
+
+ const price = document.createElement("div");
+ price.className = "price";
+ price.textContent = car.price + " (Ex-showroom)";
+ panel.appendChild(price);
+
+ const specs = document.createElement("div");
+ specs.className = "specs";
+
+ const data = [
+  ["Fuel Type",car.fuel],
+  ["Engine",car.engine],
+  ["Transmission",car.transmission],
+  ["Seating",car.seats],
+  ["Mileage",car.mileage],
+  ["Category",car.category]
+ ];
+
+ data.forEach(([label,value]) => {
+  const item = document.createElement("div");
+  item.className = "spec";
+  const name = document.createElement("span");
+  name.textContent = label;
+  const val = document.createElement("strong");
+  val.textContent = value;
+  item.append(name,val);
+  specs.appendChild(item);
+ });
+
+ panel.appendChild(specs);
+
+ const heading = document.createElement("h3");
+ heading.textContent = "⭐ Key Features";
+ panel.appendChild(heading);
+
+ const list = document.createElement("ul");
+ list.className = "features";
+
+ car.features.forEach(feature => {
+  const li = document.createElement("li");
+  li.textContent = feature;
+  list.appendChild(li);
+ });
+
+ panel.appendChild(list);
+
+ const note = document.createElement("p");
+ note.textContent =
+ "Features and prices vary by variant and model year. " +
+ "Please verify with the authorised dealer.";
+ panel.appendChild(note);
+
+ box.appendChild(panel);
+ box.scrollIntoView({behavior:"smooth"});
+}
+
+document.getElementById("search").addEventListener(
+ "keydown",e=>{if(e.key==="Enter")searchCars()}
+);
+
+searchCars();
+</script>
+</body>
+</html>
